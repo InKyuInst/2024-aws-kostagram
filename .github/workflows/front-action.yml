@@ -22,12 +22,12 @@ jobs:
 
             # 환경 설정 파일 생성
             echo "환경 설정 파일 생성"
-            echo -e "REACT_APP_REST_SERVER=${{ REACT_APP_REST_SERVER }}" > .env
-            echo -e "REACT_APP_SERVER=${{ REACT_APP_SERVER }}" > .env
-            echo -e "REACT_APP_GOOGLE_ID=${{ REACT_APP_GOOGLE_ID }}" > .env
-            echo -e "REACT_APP_GOOGLE_REDIRECT_URI=${{ REACT_APP_GOOGLE_REDIRECT_URI }}" > .env
-            echo -e "REACT_APP_KAKAO_ID=${{ REACT_APP_KAKAO_ID }}" > .env
-            echo -e "REACT_APP_KAKAO_REDIRECT_URI=${{ REACT_APP_KAKAO_REDIRECT_URI }}" > .env
+            echo -e "REACT_APP_REST_SERVER=${{ secrets.REACT_APP_REST_SERVER }}" > .env
+            echo -e "REACT_APP_SERVER=${{ secrets.REACT_APP_SERVER }}" > .env
+            echo -e "REACT_APP_GOOGLE_ID=${{ secrets.REACT_APP_GOOGLE_ID }}" > .env
+            echo -e "REACT_APP_GOOGLE_REDIRECT_URI=${{ secrets.REACT_APP_GOOGLE_REDIRECT_URI }}" > .env
+            echo -e "REACT_APP_KAKAO_ID=${{ secrets.REACT_APP_KAKAO_ID }}" > .env
+            echo -e "REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}" > .env
             
             # GIT 최신 코드 가져오기
             echo "GIT PULL 작업"
