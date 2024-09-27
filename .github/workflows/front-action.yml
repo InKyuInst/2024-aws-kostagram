@@ -1,0 +1,39 @@
+name: FRONT-WORKFLOW
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  front-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            # 오류 발생 시 스크립트 중단
+            set -e
+            
+            # SSH 접속 후 작업 디렉토리로 이동
+            echo "SSH 접속"
+            cd 2024-aws-kostagram/front
+
+            # 환경 설정 파일 생성
+            echo "환경 설정 파일 생성"
+            echo -e "REACT_APP_REST_SERVER=${{ secrets.REACT_APP_REST_SERVER }}" >> .env
+            echo -e "REACT_APP_SERVER=${{ secrets.REACT_APP_SERVER }}" >> .env
+            echo -e "REACT_APP_GOOGLE_ID=${{ secrets.REACT_APP_GOOGLE_ID }}" >> .env
+            echo -e "REACT_APP_GOOGLE_REDIRECT_URI=${{ secrets.REACT_APP_GOOGLE_REDIRECT_URI }}" >> .env
+            echo -e "REACT_APP_KAKAO_ID=${{ secrets.REACT_APP_KAKAO_ID }}" >> .env
+            echo -e "REACT_APP_KAKAO_REDIRECT_URI=${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}" >> .env
+            
+            # GIT 최신 코드 가져오기
+            echo "GIT PULL 작업"
+            git_output=$(sudo git pull origin main 2>&1)
+            echo "$git_output"
+
+            # Docker 빌드
+            echo "Docker build"
+            docker compose up -d --build front-image
