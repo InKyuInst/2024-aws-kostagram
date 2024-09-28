@@ -23,14 +23,9 @@ RUN rm -rf /usr/share/nginx/html/*
 # 4. 빌드된 React 애플리케이션을 Nginx 디렉토리로 복사
 COPY --from=build /app/build /usr/share/nginx/html
 
-# 5. SSL 인증서 파일 복사 (호스트의 인증서 파일을 컨테이너에 복사)
-# 인증서 파일은 Docker Compose의 `volumes`를 통해 마운트된다고 가정
-COPY /etc/letsencrypt/live/inkyuinst.store/fullchain.pem /etc/ssl/certs/fullchain.pem
-COPY /etc/letsencrypt/live/inkyuinst.store/privkey.pem /etc/ssl/private/privkey.pem
-
-# 6. Nginx 포트 노출
+# 5. Nginx 포트 노출
 EXPOSE 80
 EXPOSE 443  # HTTPS 포트도 추가로 노출
 
-# 7. Nginx 서버 실행
+# 6. Nginx 서버 실행
 CMD ["nginx", "-g", "daemon off;"]
