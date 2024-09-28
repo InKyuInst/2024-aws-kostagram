@@ -1,0 +1,71 @@
+name: BACK-WORKFLOW
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  front-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            # 오류 발생 시 스크립트 중단
+            set -e
+            
+            # SSH 접속 후 작업 디렉토리로 이동
+            echo "SSH 접속"
+            cd 2024-aws-kostagram/back
+
+            # 환경 설정 파일 생성
+            echo "환경 설정 파일 생성"
+            cat <<EOF > src/main/resources/application.yml
+            spring:
+              application:
+                name: rest_blog
+              jpa:
+                generate-ddl: true
+                show-sql: true
+                open-in-view: false
+              sql:
+                init:
+                  mode: never
+              datasource:
+                driver-class-name: com.mysql.cj.jdbc.Driver
+                url: jdbc:mysql://localhost:3306/jpa_db
+                username: root
+                password: 1313
+              upload:
+                location: /home/image
+            jwt:
+              issuer: kosta-inkyu
+              secret_key: ${{ secrets.JWT_SECRET_KEY }}
+              access_duration: 5000 # 1800000  # 30분 (30 * 60 * 1000)
+              refresh_duration: 86400000 # 86400000 # 24시간 (24 * 60 * 60 * 1000)
+            oauth2:
+              clients:
+                google:
+                  client-id: ${{ secrets.REACT_APP_GOOGLE_ID }}
+                  client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                  redirect-uri: ${{ secrets.REACT_APP_GOOGLE_REDIRECT_URI }}
+                  token-uri: https://oauth2.googleapis.com/token
+                  user-info-request-uri: https://www.googleapis.com/oauth2/v3/userinfo
+                kakao:
+                  client-id: ${{ secrets.REACT_APP_KAKAO_ID }}
+                  client-secret: ${{ secrets.KAKAO_CLIENT_SECRET }}
+                  redirect-uri: ${{ secrets.REACT_APP_KAKAO_REDIRECT_URI }}
+                  token-uri: https://kauth.kakao.com/oauth/token
+                  user-info-request-uri: https://kapi.kakao.com/v2/user/me
+            EOF
+            
+            # GIT 최신 코드 가져오기
+            echo "GIT PULL 작업"
+            git_output=$(sudo git pull origin main 2>&1)
+            echo "$git_output"
+
+            # Docker 빌드
+            echo "Docker build"
+            docker compose up -d --build
