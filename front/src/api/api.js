@@ -51,7 +51,6 @@ api.interceptors.response.use(
             }
         }
         removeCookie("accessToken");
-        return Promise.reject(err);
     }
 );
 
