@@ -22,8 +22,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /usr/share/nginx/html/*
 # 4. 빌드된 React 애플리케이션을 Nginx 디렉토리로 복사
 COPY --from=build /app/build /usr/share/nginx/html
-COPY /etc/letsencrypt/live/inkyuinst.store/fullchain.pem /etc/ssl/certs/fullchain.pem
-COPY /etc/letsencrypt/live/inkyuinst.store/privkey.pem /etc/ssl/private/privkey.pem
 
 # 5. Nginx 포트 노출
 EXPOSE 80
