@@ -25,7 +25,7 @@ COPY --from=build /app/build /usr/share/nginx/html
 
 # 5. Nginx 포트 노출
 EXPOSE 80
-EXPOSE 443  # HTTPS 포트도 추가로 노출
+EXPOSE 443
 
 # 6. Nginx 서버 실행
 CMD ["nginx", "-g", "daemon off;"]
