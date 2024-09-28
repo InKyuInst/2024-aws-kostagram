@@ -47,19 +47,19 @@ api.interceptors.response.use(
                 }
             } catch (error) {
                 console.log("토큰 재발급 실패");
-                return Promise.reject(err);
+                removeCookie("accessToken");
+                removeCookie("refreshToken"); 
+                window.location.href = "/login"; // 로그인 페이지로 리다이렉트
             }
         }
-        removeCookie("accessToken");
+        return Promise.reject(err);
     }
 );
 
 const refreshTokenHandler = async () => {
     try {
-        if (getCookie("accessToken")) {
-            const response = await api.post("/auth/refresh-token");
-            return response;
-        }
+        const response = await api.post("/auth/refresh-token");
+        return response;
     } catch (error) {
         throw error;
     }
