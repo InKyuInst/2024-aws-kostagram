@@ -6,3 +6,7 @@ services:
     container_name: front-container
     ports:
       - "80:80"
+      - "443:443"  # HTTPS 포트 매핑 추가
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf  # Nginx 설정 파일
+      - /etc/letsencrypt:/etc/letsencrypt  # 인증서 경로를 컨테이너에 마운트
