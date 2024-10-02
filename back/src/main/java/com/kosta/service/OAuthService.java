@@ -1,9 +1,11 @@
 package com.kosta.service;
 
+import com.kosta.entity.User;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 public interface OAuthService {
 
-	String oAuthSignIn(String code, String provider, HttpServletResponse res);
-
+	User oAuthUserCheck(String code, String provider);
+	String oAuthLogin(User user, HttpServletResponse res) throws Exception;
 }

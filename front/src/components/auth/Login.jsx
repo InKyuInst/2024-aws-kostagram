@@ -1,16 +1,24 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import google from '../../assets/google.png';
 import kakao from '../../assets/kakao.png';
+import { useEffect } from "react";
 
 const { Paper, Box, Typography, Divider, TextField, Button, IconButton } = require("@mui/material");
 const { useForm } = require("react-hook-form");
 
 const Login = () => {
+    const { state } = useLocation(); 
     const { register, handleSubmit, formState: { errors }, setError, clearErrors } = useForm();
     const navigate = useNavigate();
     const { login } = useAuth();
 
+    useEffect(() => {
+        if (state) {
+            setError("email", { type: "manual", message: state });
+        }
+    }, [])
+    
     const onSubmit = async (data) => {
         try {
             login(data, ()=> navigate("/"));

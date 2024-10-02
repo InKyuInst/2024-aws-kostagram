@@ -11,7 +11,7 @@ import com.kosta.entity.User;
 public interface UserRepository extends JpaRepository<User, Long>{
 
 	Optional<User> findByEmail(String email);
-
+	Optional<User> findByOauthProviderAndOauthProviderKey(String oAuthProvider, String oAuthProviderKey);
 	boolean existsByEmail(String email);
 
 }

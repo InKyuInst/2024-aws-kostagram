@@ -117,7 +117,7 @@ public class WebSecurityConfig {
 			CorsConfiguration config = new CorsConfiguration();
 			config.setAllowedHeaders(Collections.singletonList("*"));
 			config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-			config.setAllowedOrigins(List.of("https://inkyuinst.store"));
+			config.setAllowedOrigins(List.of("http://localhost:3000"));
 			config.setAllowCredentials(true);
 			return config;
 		};

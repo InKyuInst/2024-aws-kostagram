@@ -36,22 +36,28 @@ public class OAuthServiceImpl implements OAuthService {
 	private final TokenUtils tokenUtils;
 	
 	@Override
-	public String oAuthSignIn(String code, String provider, HttpServletResponse res) {
+	public User oAuthUserCheck(String code, String provider) {
 		// 1. code를 통해 provider에서 제공하는 accessToken 가져온다.
 		String providedAccessToken = getAccessToken(code, provider);
 		// 2. provider에서 제공하는 accessToken으로 사용자 정보를 추출한다.
 		User user = generateOAuthUser(providedAccessToken, provider);
-		// 3. 사용자 정보를 조회하고
-		// 만약 기존에 있는 사용자라면 (OAUTH 인증 여부에 따라 OAUTH TRUE로 변경)
-		// 만약 기존에 없는 사용자라면 (새로 가입_DB 추가)
-		user = userRepository.findByEmail(user.getEmail()).orElse(user);
-		if (!user.isOAuth()) {
-			user.setOAuth(true);
-		}
+		// 3. 사용자 정보를 조회
+		user = userRepository.findByOauthProviderAndOauthProviderKey(user.getOauthProvider(), user.getOauthProviderKey()).orElse(user);
 		
-		// 4. 자동 로그인 (사용자에 대한 정보로 accessToken과 refreshToken를 만들어서)
+		return user;
+	}
+
+	@Override
+	public String oAuthLogin(User user, HttpServletResponse res) throws Exception {
+		userRepository.findByEmail(user.getEmail()).ifPresent(u -> {
+			if (!u.getOauthProvider().equals(user.getOauthProvider())) {
+				String provider = u.getOauthProvider() != null ? u.getOauthProvider() :"일반 회원가입";
+				throw new RuntimeException("이미 "+ provider +"으로 가입된 이메일 입니다.");
+			}
+		});
+
 		Map<String, String> tokenMap = tokenUtils.generateToken(user);
-		
+
 		// DB에 기록(refresh)
 		user.setRefreshToken(tokenMap.get("refreshToken"));
 		userRepository.save(user);
@@ -114,15 +120,19 @@ public class OAuthServiceImpl implements OAuthService {
 		String email = null;
 		String name = null;
 		User user = null;
+		String key = null;
 		try {
-			if (jsonNode.has("email") && jsonNode.has("name")) {
+			if (jsonNode.has("email")) {
+				key = jsonNode.get("sub").asText();
 				email = jsonNode.get("email").asText();
 				name = jsonNode.get("name").asText();				
-			} else if (jsonNode.has("id") && jsonNode.has("properties")) {
-				email = jsonNode.get("id").asText() + "@kakao.com";
+			} else {
+				key = jsonNode.get("id").asText();
 				name = jsonNode.get("properties").get("nickname").asText();
 			}
 			user = User.builder()
+					.oauthProvider(provider)
+					.oauthProviderKey(key)
 					.email(email)
 					.name(name)
 					.build();

@@ -1,6 +1,7 @@
 import api from "../api";
 
 export const oauthAPI = {
-    googleLogin : (code) => api.get(`/oauth/google?code=${code}`),
-    kakaoLogin : (code) => api.get(`/oauth/kakao?code=${code}`),
+    googleSignUp : (code) => api.get(`/oauth/google?code=${code}`),
+    kakaoSignUp : (code) => api.get(`/oauth/kakao?code=${code}`),
+    emailLogin : (data) => api.post(`/oauth/login`, data),
 }

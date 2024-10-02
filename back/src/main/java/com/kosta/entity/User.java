@@ -49,7 +49,13 @@ public class User implements UserDetails {
 	
 	@Column
 	@Builder.Default
-	private boolean oAuth = false;
+	private boolean oauth = false;
+
+	@Column(nullable = true)
+	private String oauthProvider;
+
+	@Column(nullable = true)
+	private String oauthProviderKey;
 	
 	@CreatedDate
 	@Column(name = "created_at")
